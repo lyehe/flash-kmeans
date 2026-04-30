@@ -21,7 +21,8 @@ classifiers = [
 ]
 dependencies = [
   "torch>=2.0",
-  "triton>=2.0",
+  "triton>=2.0; platform_system != 'Windows'",
+  "triton-windows>=3.0; platform_system == 'Windows'",
   "numpy",
   "tqdm"
 ]

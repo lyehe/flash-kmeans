@@ -196,7 +196,7 @@ def _heuristic_euclid_config(
     - H100: heuristic derived from H100 grid tuning results
     - A100: heuristic derived from A100 grid tuning results
     - GB10: heuristic derived from GB10 grid tuning results
-    - others: conservative fallback to reduce OOR risk
+    - others: return None so callers can use Triton autotune instead
 
     For half-precision dtypes (fp16/bf16, the regime the per-arch tables
     were tuned in) the picked config is returned as-is so behaviour on
@@ -408,13 +408,9 @@ def _heuristic_euclid_config(
             return _finalize({"BLOCK_N": 64, "BLOCK_K": 64, "num_warps": 4, "num_stages": 1})
         return _finalize({"BLOCK_N": 128, "BLOCK_K": 32, "num_warps": 4, "num_stages": 1})
 
-    # Conservative fallback for unknown architectures (prioritize avoiding OOR).
-    return _finalize({
-        "BLOCK_N": 64,
-        "BLOCK_K": 32,
-        "num_warps": 4,
-        "num_stages": 1,
-    })
+    # Unknown architectures are better served by Triton autotune than by a
+    # conservative fixed tile tuned for datacenter GPUs.
+    return None
 
 
 @triton.jit

@@ -25,3 +25,8 @@ dist/
 # MacOS & Linux
 .DS_Store
 .idea/
+
+# Local benchmark / Triton runtime artifacts
+.tmp/
+.triton_cache/
+benchmark_*.jsonl

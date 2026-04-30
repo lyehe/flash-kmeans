@@ -109,9 +109,9 @@ try:
     FastKMeans.train = _patched_train
     FastKMeans.predict = _patched_predict
     
-    print("✓ FastKMeans monkey patched: torch.Tensor input/output without numpy conversion")
+    print("FastKMeans monkey patched: torch.Tensor input/output without numpy conversion")
     
 except ImportError as e:
-    print(f"✗ fastkmeans not available, skipping monkey patch: {e}")
+    print(f"fastkmeans not available, skipping monkey patch: {e}")
 except Exception as e:
-    print(f"✗ Failed to monkey patch FastKMeans: {e}")
+    print(f"Failed to monkey patch FastKMeans: {e}")

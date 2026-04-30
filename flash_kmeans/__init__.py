@@ -15,8 +15,7 @@ except Exception:
     import warnings
     from .torch_fallback import batch_kmeans_Euclid_torch_native
 
-    warnings.warn
-    (
+    warnings.warn(
         "Triton kmeans implementation not found, falling back to torch native implementation.",
         RuntimeWarning,
     )

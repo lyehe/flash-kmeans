@@ -17,6 +17,12 @@ Install flash-kmeans with `pip`:
 pip install flash-kmeans
 ```
 
+On Windows, install the Triton runtime with:
+
+```bash
+pip install triton-windows
+```
+
 From source:
 
 ```bash
@@ -24,6 +30,8 @@ git clone https://github.com/svg-project/flash-kmeans.git
 cd flash-kmeans
 pip install -e .
 ```
+
+If Triton is unavailable, `flash-kmeans` falls back to the torch-native backend automatically, but performance will be substantially lower.
 
 ## Usage
 
@@ -47,6 +55,12 @@ We compare the performance of our Triton implementation with the following basel
   - batched torch kmeans: a naive batch implementation without considering OOM. 
 
 Tested on NVIDIA H200 GPU with FP16 precision, 128 demensional data, varying number of clusters (k), data points (n) and batch size (b). Our Triton implementation brings significant performance improvements. 
+
+To compare the currently active backend against the torch-native fallback on your machine:
+
+```bash
+python examples/benchmark_backends.py --batch-size 1 --num-points 32768 --dim 128 --num-clusters 256 --max-iters 3
+```
 
 ![Benchmark result 1](assets/bench_k100.png)
 ![Benchmark result 2](assets/bench_k128.png)

@@ -1,9 +1,21 @@
+import os
+import tempfile
+import time
+import argparse
+
+_LOCAL_TMP = os.path.abspath(".tmp")
+os.makedirs(_LOCAL_TMP, exist_ok=True)
+os.environ.setdefault("TMP", _LOCAL_TMP)
+os.environ.setdefault("TEMP", _LOCAL_TMP)
+os.environ.setdefault("TMPDIR", _LOCAL_TMP)
+tempfile.tempdir = _LOCAL_TMP
+os.environ.setdefault("TRITON_CACHE_DIR", os.path.abspath(".triton_cache"))
+os.makedirs(os.environ["TRITON_CACHE_DIR"], exist_ok=True)
+
 import torch
 from flash_kmeans import batch_kmeans_Euclid, batch_kmeans_Cosine
 from flash_kmeans.centroid_update_triton import triton_centroid_update_euclid, triton_centroid_update_cosine
 from flash_kmeans.torch_fallback import batch_kmeans_Euclid_torch_native
-import time
-import argparse
 
 def _euclid_iter_torch(x, x_sq, centroids):
     cent_sq = (centroids ** 2).sum(dim=-1)
@@ -147,9 +159,10 @@ try:
             all_labels.append(labels)
         labels = torch.stack(all_labels)
         return labels, None, None
-except ImportError:
-    print("fast_pytorch_kmeans is not installed")
+except Exception as e:
+    print(f"fast_pytorch_kmeans is not available: {e}")
     batch_kmeans_Euclid_fast_torch = None
+    batch_kmeans_Cosine_fast_torch = None
 
 
 # https://github.com/AnswerDotAI/fastkmeans
@@ -184,9 +197,10 @@ try:
             all_labels.append(labels)
         labels = torch.stack(all_labels)
         return labels, None, None
-except ImportError:
-    print("fastkmeans is not installed")
+except Exception as e:
+    print(f"fastkmeans is not available: {e}")
     batch_kmeans_Euclid_fastkmeans = None
+    batch_kmeans_Euclid_fastkmeans_torch = None
 
 
 def benchmark_kmeans(b, n, d, k, kmeans_func, max_iters=100, tol=0.0):
